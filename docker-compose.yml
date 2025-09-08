@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:14
+    container_name: hokushi_postgres
+    environment:
+      POSTGRES_USER: hokushi
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hokushi_practice
+    ports:
+      - "5433:5432"  # PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql  # 初期化スクリプト（オプション）
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: hokushi_backend
+    ports:
+      - "3002:3002"  # Fastify API
+    environment:
+      DATABASE_URL: "postgresql://hokushi:password@postgres:5432/hokushi_practice?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: hokushi_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5051:80"  # pgAdminのWeb UI
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
