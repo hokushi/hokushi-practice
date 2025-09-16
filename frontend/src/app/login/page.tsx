@@ -25,7 +25,7 @@ const AccountFormSchema = z
     path: ["password_check"],
   });
 
-export default function Register() {
+export default function Login() {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof AccountFormSchema>>({
@@ -54,17 +54,20 @@ export default function Register() {
         console.log("登録成功:", result);
         router.push("/login");
       } else {
-        console.log("登録失敗:", result.error);
+        console.error("登録失敗:", result);
       }
     } catch (error) {
-      console.log("ネットワークエラー:", error);
+      console.error("ネットワークエラー:", error);
     }
   };
 
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="bg-pink flex w-1/3 flex-col gap-6 rounded px-2 py-4 shadow">
-        <h1 className="text-center text-2xl font-semibold">アカウント作成</h1>
+        <h1 className="text-center text-2xl font-semibold">
+          ミサちゃんきゃわきゃわ
+        </h1>
+        {/*
         <div>
           <FormProvider {...form}>
             <form
@@ -107,6 +110,7 @@ export default function Register() {
             </form>
           </FormProvider>
         </div>
+        */}
       </div>
     </div>
   );
