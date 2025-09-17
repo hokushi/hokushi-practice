@@ -6,6 +6,8 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordForm from "../components/PasswordForm";
 import { useRouter } from "next/navigation";
+import { use } from "react";
+import { useToast } from "../utils/useToast";
 
 const AccountFormSchema = z
   .object({
@@ -27,6 +29,7 @@ const AccountFormSchema = z
 
 export default function Register() {
   const router = useRouter();
+  const toast = useToast();
 
   const form = useForm<z.infer<typeof AccountFormSchema>>({
     resolver: zodResolver(AccountFormSchema),
@@ -51,10 +54,10 @@ export default function Register() {
       const result = await response.json();
 
       if (response.ok) {
-        console.log("登録成功:", result);
+        toast.success(result.message);
         router.push("/login");
       } else {
-        console.log("登録失敗:", result.error);
+        toast.error(result.error);
       }
     } catch (error) {
       console.log("ネットワークエラー:", error);

@@ -71,7 +71,7 @@ fastify.post(
       });
 
       reply.status(201).send({
-        message: "ユーザーが正常に作成されました",
+        message: "登録が完了しました",
         user: newUser,
       });
     } catch (error) {
