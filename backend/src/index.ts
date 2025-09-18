@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import { config } from "./config/index.js";
+import { authRoutes } from "./routes/auth.js";
 import { userRoutes } from "./routes/users.js";
 
 const fastify = Fastify({ logger: true });
@@ -13,7 +14,8 @@ fastify.get("/", async () => {
 });
 
 // ルート登録
-await fastify.register(userRoutes);
+await fastify.register(authRoutes);  // 認証系API
+await fastify.register(userRoutes);  // ユーザー管理系API
 
 // サーバー起動
 const start = async () => {
