@@ -41,6 +41,11 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  
+  --color-red: #ef4444;
+  --color-pink: #fef2f2;
+  --color-blue: #3b82f6;
+  --color-blue-dark: #2563eb;
 }
 
 :root {
@@ -120,3 +125,4 @@
     @apply bg-background text-foreground;
   }
 }
+

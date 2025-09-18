@@ -43,11 +43,11 @@ export default function InputForm({
               <FormLabel className="flex gap-2 pl-2 font-normal">
                 {label}
                 {required && (
-                  <span className="text-xs text-red-500">※必須</span>
+                  <span className="text-xs text-red">※必須</span>
                 )}
               </FormLabel>
             )}
-            <FormMessage className="text-alert text-xs font-normal" />
+            <FormMessage className="text-xs font-normal text-red" />
           </div>
           <div className="relative">
             <FormControl>
