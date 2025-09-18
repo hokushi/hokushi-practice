@@ -7,6 +7,43 @@ import { config } from "../config/index.js";
 const prisma = new PrismaClient();
 
 export async function userRoutes(fastify: FastifyInstance) {
+  // 全ユーザー取得API
+  fastify.get("/api/users", async () => {
+    try {
+      const allUsers = await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+        },
+      });
+
+      return {
+        message: "全ユーザー取得成功",
+        users: allUsers,
+        count: allUsers.length
+      };
+    } catch (error) {
+      fastify.log.error(error);
+      return {
+        error: "ユーザー取得エラーが発生しました",
+      };
+    }
+  });
+
+  // ユーザー登録フォーム情報取得API
+  fastify.get("/api/users/register", async () => {
+    return {
+      message: "ユーザー登録フォーム",
+      fields: {
+        name: { type: "string", required: true, minLength: 1 },
+        email: { type: "string", required: true, format: "email" },
+        password: { type: "string", required: true, minLength: 8 },
+      },
+    };
+  });
+
   // ユーザー登録API
   fastify.post(
     "/api/users/register",
