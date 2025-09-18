@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { getUsersAction } from "./_serverActions/api/getUsersAction";
+import UserCard from "./_component/UserCard";
 
 export default async function Users() {
   const usersData = await getUsersAction();
@@ -13,19 +13,7 @@ export default async function Users() {
         </div>
         <div className="flex flex-col gap-3">
           {usersData.users.map((user) => (
-            <div
-              key={user.id}
-              className="flex items-start justify-between rounded border bg-white p-4 shadow-sm"
-            >
-              <div className="flex flex-col">
-                <div className="font-semibold">{user.name}</div>
-                <div className="text-sm text-gray-600">{user.email}</div>
-                <div className="text-xs text-gray-400">
-                  登録日: {new Date(user.createdAt).toLocaleDateString("ja-JP")}
-                </div>
-              </div>
-              <Button size="sm">編集</Button>
-            </div>
+            <UserCard key={user.id} user={user} />
           ))}
         </div>
       </div>

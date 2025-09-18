@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordForm from "../components/PasswordForm";
 import { useRouter } from "next/navigation";
 import { use } from "react";
-import { useToast } from "../utils/useToast";
+import { useToast } from "../hooks/useToast";
 
 const AccountFormSchema = z
   .object({
