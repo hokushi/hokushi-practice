@@ -1,33 +1,8 @@
 import { Button } from "@/components/ui/button";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: string;
-}
-
-interface UsersResponse {
-  message: string;
-  users: User[];
-  count: number;
-}
-
-//ユーザー取得関数
-async function getUsers(): Promise<UsersResponse> {
-  const res = await fetch(`${process.env.BACKEND_URL}/api/users`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch users");
-  }
-
-  return res.json();
-}
+import { getUsersAction } from "./_serverActions/api/getUsersAction";
 
 export default async function Users() {
-  const usersData = await getUsers();
+  const usersData = await getUsersAction();
 
   return (
     <div className="flex h-full w-full">
