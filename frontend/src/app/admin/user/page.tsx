@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { getBaseUrl } from "@/app/utils/getBaseUrl";
+import UserCard from "./_component/UserCard";
 
 interface User {
   id: number;
@@ -13,21 +14,23 @@ interface UsersResponse {
   count: number;
 }
 
-//ユーザー取得関数
-async function getUsers(): Promise<UsersResponse> {
-  const res = await fetch(`${process.env.BACKEND_URL}/api/users`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch users");
-  }
-
-  return res.json();
-}
-
 export default async function Users() {
   const usersData = await getUsers();
+
+  //ユーザー取得関数
+  async function getUsers(): Promise<UsersResponse> {
+    const baseUrl = getBaseUrl();
+    const res = await fetch(`${baseUrl}/api/users`, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    return res.json();
+  }
 
   return (
     <div className="flex h-full w-full">
@@ -38,19 +41,7 @@ export default async function Users() {
         </div>
         <div className="flex flex-col gap-3">
           {usersData.users.map((user) => (
-            <div
-              key={user.id}
-              className="flex items-start justify-between rounded border bg-white p-4 shadow-sm"
-            >
-              <div className="flex flex-col">
-                <div className="font-semibold">{user.name}</div>
-                <div className="text-sm text-gray-600">{user.email}</div>
-                <div className="text-xs text-gray-400">
-                  登録日: {new Date(user.createdAt).toLocaleDateString("ja-JP")}
-                </div>
-              </div>
-              <Button size="sm">編集</Button>
-            </div>
+            <UserCard key={user.id} user={user} />
           ))}
         </div>
       </div>
