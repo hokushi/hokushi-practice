@@ -1,28 +1,13 @@
 "use client";
 
-import { getBaseUrl } from "@/app/utils/getBaseUrl";
 import { Button } from "@/components/ui/button";
+import { deleteUser } from "../_serverActions/api/deleteUserAction";
 
 interface User {
   id: number;
   name: string;
   email: string;
   createdAt: string;
-}
-
-//ユーザー削除関数
-async function deleteUser(id: number) {
-  const baseUrl = getBaseUrl();
-  const res = await fetch(`${baseUrl}/api/users/${id}`, {
-    method: "DELETE",
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete user");
-  }
-
-  return res.json();
 }
 
 //ユーザーカードコンポーネント
