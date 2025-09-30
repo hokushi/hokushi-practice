@@ -1,10 +1,10 @@
 "use client";
 
 import { FormProvider, useForm } from "react-hook-form";
-import InputForm from "../components/InputForm";
+import InputForm from "../../components/InputForm";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import PasswordForm from "../components/PasswordForm";
+import PasswordForm from "../../components/PasswordForm";
 import { useRouter } from "next/navigation";
 
 const LoginFormSchema = z.object({

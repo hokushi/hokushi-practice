@@ -1,11 +1,12 @@
 import { getBaseUrl } from "@/app/utils/getBaseUrl";
 import UserCard from "./_component/UserCard";
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
   createdAt: string;
+  isAdmin: boolean;
 }
 
 interface UsersResponse {
