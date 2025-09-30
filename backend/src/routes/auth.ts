@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { registerSchema, loginSchema } from "../schemas/user.js";
 import { config } from "../config/index.js";
 
@@ -92,8 +93,17 @@ export async function authRoutes(fastify: FastifyInstance) {
           });
         }
 
+        // JWT生成
+        const payload = {
+          userId: user.id,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        };
+        const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "7d" });
+
         reply.status(200).send({
           message: "ログインが完了しました",
+          token,
           user: {
             id: user.id,
             name: user.name,
