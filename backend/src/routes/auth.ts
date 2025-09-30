@@ -101,9 +101,14 @@ export async function authRoutes(fastify: FastifyInstance) {
         };
         const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "7d" });
 
+        // Cookieにトークンを設定
+        reply.header(
+          "Set-Cookie",
+          `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/`
+        );
+
         reply.status(200).send({
           message: "ログインが完了しました",
-          token,
           user: {
             id: user.id,
             name: user.name,
