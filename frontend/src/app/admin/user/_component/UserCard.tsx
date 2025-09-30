@@ -38,16 +38,28 @@ export default function UserCard({ user }: { user: User }) {
           登録日: {new Date(user.createdAt).toLocaleDateString("ja-JP")}
         </div>
       </div>
-      <Button
-        className="hover:cursor-pointer"
-        onClick={() => {
-          deleteUser(user.id);
-        }}
-        variant="destructive"
-        size="sm"
-      >
-        削除
-      </Button>
+      <div className="flex gap-2">
+        {!user.isAdmin && (
+          <Button
+            onClick={() => {
+              deleteUser(user.id);
+            }}
+            variant="outline"
+            size="sm"
+          >
+            管理者にする
+          </Button>
+        )}
+        <Button
+          onClick={() => {
+            deleteUser(user.id);
+          }}
+          variant="destructive"
+          size="sm"
+        >
+          削除
+        </Button>
+      </div>
     </div>
   );
 }
