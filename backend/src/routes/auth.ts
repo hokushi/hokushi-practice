@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
-import { registerSchema } from "../schemas/user.js";
+import { registerSchema, loginSchema } from "../schemas/user.js";
 import { config } from "../config/index.js";
 
 const prisma = new PrismaClient();
@@ -51,6 +51,55 @@ export async function authRoutes(fastify: FastifyInstance) {
         reply.status(201).send({
           message: "登録が完了しました",
           user: newUser,
+        });
+      } catch (error) {
+        fastify.log.error(error);
+        reply.status(500).send({
+          error: "サーバーエラーが発生しました",
+        });
+      }
+    }
+  );
+
+  // ログインAPI
+  fastify.post(
+    "/api/login",
+    { schema: loginSchema },
+    async (request, reply) => {
+      try {
+        const { email, password } = request.body as {
+          email: string;
+          password: string;
+        };
+
+        // ユーザー検索
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user) {
+          return reply.status(401).send({
+            error: "メールアドレスまたはパスワードが間違っています",
+          });
+        }
+
+        // パスワード照合
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+          return reply.status(401).send({
+            error: "メールアドレスまたはパスワードが間違っています",
+          });
+        }
+
+        reply.status(200).send({
+          message: "ログインが完了しました",
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+          },
         });
       } catch (error) {
         fastify.log.error(error);
