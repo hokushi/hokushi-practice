@@ -13,6 +13,7 @@ export async function userRoutes(fastify: FastifyInstance) {
           name: true,
           email: true,
           createdAt: true,
+          isAdmin: true,
         },
       });
 
