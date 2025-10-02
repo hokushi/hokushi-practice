@@ -3,7 +3,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const apiUrl = process.env.BACKEND_URL;
-    const response = await fetch(`${apiUrl}/api/users/register`, {
+    const response = await fetch(`${apiUrl}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

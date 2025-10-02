@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import InputForm from "@/app/components/InputForm";
 import PasswordForm from "@/app/components/PasswordForm";
 import { useToast } from "@/app/hooks/useToast";
+import CheckBoxForm from "@/app/components/CheckBoxForm";
 
 const AccountFormSchema = z
   .object({
@@ -20,6 +21,7 @@ const AccountFormSchema = z
     password_check: z
       .string()
       .min(8, { message: "パスワード確認は8文字以上である必要があります。" }),
+    isAdmin: z.boolean(),
   })
   .refine((data) => data.password === data.password_check, {
     message: "パスワードが一致しません。",
@@ -37,6 +39,7 @@ export default function Register() {
       email: "",
       password: "",
       password_check: "",
+      isAdmin: false,
     },
   });
 
@@ -44,7 +47,7 @@ export default function Register() {
     try {
       const { password_check, ...submitData } = data;
 
-      const response = await fetch("/api/users/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
@@ -97,6 +100,12 @@ export default function Register() {
                 control={form.control}
                 name="password_check"
                 label="パスワード確認"
+                required
+              />
+              <CheckBoxForm
+                control={form.control}
+                name="isAdmin"
+                label="管理者ですか？"
                 required
               />
               <button

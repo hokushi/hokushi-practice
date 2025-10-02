@@ -5,7 +5,7 @@ import { authController } from "../controllers/authController.js";
 export async function authRoutes(fastify: FastifyInstance) {
   // ユーザー登録API
   fastify.post(
-    "/api/users/register",
+    "/api/register",
     { schema: registerSchema },
     authController.register
   );
