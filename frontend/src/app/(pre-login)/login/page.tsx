@@ -6,6 +6,8 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordForm from "../../components/PasswordForm";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/app/hooks/useToast";
+import { Button } from "@/components/ui/button";
 
 const LoginFormSchema = z.object({
   email: z
@@ -18,6 +20,7 @@ const LoginFormSchema = z.object({
 
 export default function Login() {
   const router = useRouter();
+  const toast = useToast();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -29,8 +32,23 @@ export default function Login() {
 
   const onSubmit = async (data: z.infer<typeof LoginFormSchema>) => {
     try {
+      const response = await fetch("http://localhost:3002/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include", // Cookieを送受信するために必要
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(result.message);
+        router.push("/");
+      } else {
+        toast.error(result.error);
+      }
     } catch (error) {
       console.error("ネットワークエラー:", error);
+      toast.error("ネットワークエラーが発生しました");
     }
   };
 
@@ -58,13 +76,13 @@ export default function Login() {
                 required
               />
 
-              <button
+              <Button
                 type="submit"
                 className="bg-blue hover:bg-blue-dark rounded px-4 py-2 text-white disabled:opacity-50"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? "ログイン中..." : "ログイン"}
-              </button>
+              </Button>
             </form>
           </FormProvider>
         </div>
