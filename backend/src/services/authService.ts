@@ -7,7 +7,12 @@ const prisma = new PrismaClient();
 
 export const authService = {
   // ユーザー登録
-  async register(name: string, email: string, password: string) {
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    isAdmin: boolean
+  ) {
     // 既存ユーザーチェック
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -26,6 +31,7 @@ export const authService = {
         name,
         email,
         password: hashedPassword,
+        isAdmin,
       },
       select: {
         id: true,

@@ -5,13 +5,19 @@ export const authController = {
   // ユーザー登録
   async register(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { name, email, password } = request.body as {
+      const { name, email, password, isAdmin } = request.body as {
         name: string;
         email: string;
         password: string;
+        isAdmin: boolean;
       };
 
-      const newUser = await authService.register(name, email, password);
+      const newUser = await authService.register(
+        name,
+        email,
+        password,
+        isAdmin
+      );
 
       reply.status(201).send({
         message: "登録が完了しました",
