@@ -83,6 +83,7 @@ export default function Login() {
               >
                 {form.formState.isSubmitting ? "ログイン中..." : "ログイン"}
               </Button>
+              <div>googleアカウントでログイン</div>
             </form>
           </FormProvider>
         </div>
