@@ -83,6 +83,12 @@ export default function Login() {
               >
                 {form.formState.isSubmitting ? "ログイン中..." : "ログイン"}
               </Button>
+              <a
+                href="/api/googleauth/login"
+                className="ml-auto text-xs text-blue-600 hover:underline cursor-pointer"
+              >
+                googleアカウントでログイン
+              </a>
             </form>
           </FormProvider>
         </div>
