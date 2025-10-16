@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { registerSchema, loginSchema } from "../schemas/user.js";
+import { registerSchema, loginSchema } from "../schemas/auth.js";
 import { authController } from "../controllers/authController.js";
 
 export async function authRoutes(fastify: FastifyInstance) {
