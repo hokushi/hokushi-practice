@@ -19,9 +19,26 @@ async function deleteUser(id: number) {
   return res.json();
 }
 
+//管理者登録関数
+async function adminRegisterAction(id: number) {
+  const baseUrl = getBaseUrl();
+  const body = { isAdmin: true };
+  const res = await fetch(`${baseUrl}/api/users/admin/${id}`, {
+    method: "PUT",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+
+  console.log(data);
+
+  return data;
+}
+
 //ユーザーカードコンポーネント
 export default function UserCard({ user }: { user: User }) {
-  console.log(user);
   return (
     <div className="flex items-start justify-between rounded border bg-white p-4 shadow-sm">
       <div className="flex flex-col">
@@ -42,7 +59,7 @@ export default function UserCard({ user }: { user: User }) {
         {!user.isAdmin && (
           <Button
             onClick={() => {
-              deleteUser(user.id);
+              adminRegisterAction(user.id);
             }}
             variant="outline"
             size="sm"
