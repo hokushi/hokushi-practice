@@ -49,7 +49,11 @@ export const authService = {
     return newUser;
   },
 
-  // ログイン
+  /**
+   * 入力されたemailが存在するか確認しパスワード照合を行う
+   * @param email
+   * @param password
+   */
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({
       where: { email },

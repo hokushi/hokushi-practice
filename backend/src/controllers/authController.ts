@@ -58,6 +58,7 @@ export const authController = {
       if (error instanceof AppError) {
         return reply.status(error.statusCode).send({ error: error.message });
       }
+      //throw漏れを防ぐための500エラーハンドリング
       reply.status(500).send({
         error: "サーバーエラーが発生しました",
       });
