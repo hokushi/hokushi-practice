@@ -1,5 +1,7 @@
 import { getBaseUrl } from "@/app/utils/getBaseUrl";
 import UserCard from "./_component/UserCard";
+import { cookies } from "next/headers";
+import { headerBuilder } from "@/app/utils/headerBuilder";
 
 export interface User {
   id: number;
@@ -20,10 +22,12 @@ export default async function Users() {
 
   //ユーザー取得関数
   async function getUsers(): Promise<UsersResponse> {
-    const baseUrl = getBaseUrl();
+    const { baseUrl, headers } = await headerBuilder();
+
     const res = await fetch(`${baseUrl}/api/users`, {
       method: "GET",
       cache: "no-store",
+      headers,
     });
 
     if (!res.ok) {

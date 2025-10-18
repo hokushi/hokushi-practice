@@ -1,4 +1,5 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
+import { userRepository } from "../repositories/userRepository.js";
 
 const prisma = new PrismaClient();
 
@@ -12,15 +13,7 @@ export const userService = {
 
   // 全ユーザーを取得
   async findAll() {
-    return await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        isAdmin: true,
-      },
-    });
+    return await userRepository.findAll();
   },
 
   // ユーザーの管理者権限を更新

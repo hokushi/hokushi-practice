@@ -2,6 +2,23 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { userService } from "../services/userService.js";
 
 export const userController = {
+  // 全ユーザー取得
+  async getAllUsers(_: FastifyRequest, reply: FastifyReply) {
+    try {
+      const allUsers = await userService.findAll();
+
+      reply.status(200).send({
+        message: "全ユーザー取得成功",
+        users: allUsers,
+        count: allUsers.length,
+      });
+    } catch (error) {
+      console.log(error);
+      reply.status(500).send({
+        error: "ユーザー取得エラーが発生しました",
+      });
+    }
+  },
   // 管理者登録
   async amdinRegister(request: FastifyRequest, reply: FastifyReply) {
     try {
