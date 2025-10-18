@@ -1,5 +1,4 @@
 export const getAllUserSchema = {
-  body: {},
   response: {
     200: {
       type: "object",

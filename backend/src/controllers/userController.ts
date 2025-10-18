@@ -1,10 +1,41 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { userService } from "../services/userService.js";
+import { authService } from "../services/authService.js";
+import { AppError } from "../errors/AppError.js";
 
 export const userController = {
-  // 全ユーザー取得
-  async getAllUsers(_: FastifyRequest, reply: FastifyReply) {
+  /**
+   *　全ユーザー取得
+   * @param request
+   * @param reply
+   * 200:全ユーザー取得成功
+   * 401:認証トークンなし、無効なトークン
+   * 403:管理者権限なし
+   * 500:予期せぬエラー
+   */
+  async getAllUsers(request: FastifyRequest, reply: FastifyReply) {
     try {
+      // Cookieヘッダーからtokenを取得
+      const cookieHeader = request.headers.cookie;
+
+      const token = cookieHeader?.match(/token=([^;]+)/)?.[1];
+
+      if (!token) {
+        return reply.status(401).send({
+          error: "認証トークンが見つかりません",
+        });
+      }
+
+      // トークン検証
+      const decoded = await authService.verifyToken(token);
+
+      // 管理者権限チェック（オプション：管理者のみアクセス可能にする場合）
+      if (!decoded.isAdmin) {
+        return reply.status(403).send({
+          error: "管理者権限が必要です",
+        });
+      }
+
       const allUsers = await userService.findAll();
 
       reply.status(200).send({
@@ -13,12 +44,16 @@ export const userController = {
         count: allUsers.length,
       });
     } catch (error) {
-      console.log(error);
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
+      }
+      //throw漏れを防ぐための500エラーハンドリング
       reply.status(500).send({
-        error: "ユーザー取得エラーが発生しました",
+        error: "サーバーエラーが発生しました",
       });
     }
   },
+
   // 管理者登録
   async amdinRegister(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -60,9 +95,12 @@ export const userController = {
         },
       });
     } catch (error) {
-      console.log(error);
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
+      }
+      //throw漏れを防ぐための500エラーハンドリング
       reply.status(500).send({
-        error: " 想定外のエラーが発生しました",
+        error: "サーバーエラーが発生しました",
       });
     }
   },

@@ -96,4 +96,26 @@ export const authService = {
       },
     };
   },
+
+  /**
+   * JWTトークンを検証する
+   * @param token
+   */
+  async verifyToken(token: string) {
+    try {
+      const decoded = jwt.verify(token, config.jwtSecret) as {
+        userId: number;
+        email: string;
+        isAdmin: boolean;
+      };
+
+      return decoded;
+    } catch (error) {
+      throw new AppError(
+        "INVALID_TOKEN",
+        401,
+        "無効なトークンです"
+      );
+    }
+  },
 };
