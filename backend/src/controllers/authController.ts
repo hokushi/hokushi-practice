@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { authService } from "../services/authService.js";
+import { AppError } from "../errors/AppError.js";
 
 export const authController = {
   // ユーザー登録
@@ -24,10 +25,8 @@ export const authController = {
         user: newUser,
       });
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "このメールアドレスは既に使用されています") {
-          return reply.status(409).send({ error: error.message });
-        }
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
       }
       reply.status(500).send({
         error: "サーバーエラーが発生しました",
@@ -56,15 +55,8 @@ export const authController = {
         user,
       });
     } catch (error) {
-      if (error instanceof Error) {
-        if (
-          error.message === "メールアドレスまたはパスワードが間違っています"
-        ) {
-          return reply.status(401).send({ error: error.message });
-        }
-        if (error.message === "このメールアドレスは既に使用されています") {
-          return reply.status(409).send({ error: error.message });
-        }
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
       }
       reply.status(500).send({
         error: "サーバーエラーが発生しました",

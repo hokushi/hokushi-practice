@@ -2,6 +2,7 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/index.js";
+import { AppError } from "../errors/AppError.js";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,11 @@ export const authService = {
     });
 
     if (existingUser) {
-      throw new Error("このメールアドレスは既に使用されています");
+      throw new AppError(
+        "EMAIL_ALREADY_EXISTS",
+        409,
+        "このメールアドレスは既に使用されています"
+      );
     }
 
     // パスワードハッシュ化
@@ -46,20 +51,27 @@ export const authService = {
 
   // ログイン
   async login(email: string, password: string) {
-    // ユーザー検索
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      throw new Error("メールアドレスまたはパスワードが間違っています");
+      throw new AppError(
+        "INVALID_CREDENTIALS",
+        401,
+        "メールアドレスまたはパスワードが間違っています"
+      );
     }
 
     // パスワード照合
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("メールアドレスまたはパスワードが間違っています");
+      throw new AppError(
+        "INVALID_CREDENTIALS",
+        401,
+        "メールアドレスまたはパスワードが間違っています"
+      );
     }
 
     // JWT生成
