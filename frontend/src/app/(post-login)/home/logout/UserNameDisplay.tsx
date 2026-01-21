@@ -1,8 +1,8 @@
+import { Button } from "@/components/ui/button";
+
 type UserNameDisplayProps = {
   name: string;
 };
-
-import { Button } from "@/components/ui/button";
 
 export default function UserNameDisplay({ name }: UserNameDisplayProps) {
   return (
