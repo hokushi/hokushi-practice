@@ -1,10 +1,12 @@
-import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/index.js";
 import { AppError } from "../errors/AppError.js";
-
-const prisma = new PrismaClient();
+import {
+  emailAlreadyExistsError,
+  invalidCredentialsError,
+} from "../errors/authErrors.js";
+import { userRepository } from "../repositories/userRepository.js";
 
 export const authService = {
   // ユーザー登録
@@ -12,38 +14,24 @@ export const authService = {
     name: string,
     email: string,
     password: string,
-    isAdmin: boolean
+    isAdmin: boolean,
   ) {
     // 既存ユーザーチェック
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await userRepository.findByEmail(email);
 
     if (existingUser) {
-      throw new AppError(
-        "EMAIL_ALREADY_EXISTS",
-        409,
-        "このメールアドレスは既に使用されています"
-      );
+      throw emailAlreadyExistsError();
     }
 
     // パスワードハッシュ化
     const hashedPassword = await bcrypt.hash(password, config.saltRounds);
 
     // ユーザー作成
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        isAdmin,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-      },
+    const newUser = await userRepository.createUser({
+      name,
+      email,
+      password: hashedPassword,
+      isAdmin,
     });
 
     return newUser;
@@ -55,27 +43,18 @@ export const authService = {
    * @param password
    */
   async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    // ユーザー存在確認
+    const user = await userRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError(
-        "INVALID_CREDENTIALS",
-        401,
-        "メールアドレスまたはパスワードが間違っています"
-      );
+      throw invalidCredentialsError();
     }
 
     // パスワード照合
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new AppError(
-        "INVALID_CREDENTIALS",
-        401,
-        "メールアドレスまたはパスワードが間違っています"
-      );
+      throw invalidCredentialsError();
     }
 
     // JWT生成
@@ -111,11 +90,7 @@ export const authService = {
 
       return decoded;
     } catch (error) {
-      throw new AppError(
-        "INVALID_TOKEN",
-        401,
-        "無効なトークンです"
-      );
+      throw new AppError("INVALID_TOKEN", 401, "無効なトークンです");
     }
   },
 };
