@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import UserNameDisplay from "./top/logout/UserNameDisplay";
+import UserNameDisplay from "./home/logout/UserNameDisplay";
 
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3002";
 
