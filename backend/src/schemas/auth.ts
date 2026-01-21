@@ -20,4 +20,20 @@ export const loginSchema = {
       password: { type: "string", minLength: 1 },
     },
   },
+  response: {
+    200: {
+      properties: {
+        message: { type: "string" },
+        user: {
+          type: "object",
+          properties: {
+            id: { type: "number" },
+            name: { type: "string" },
+            email: { type: "string" },
+            isAdmin: { type: "boolean" },
+          },
+        },
+      },
+    },
+  },
 };

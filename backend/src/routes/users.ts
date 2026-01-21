@@ -1,26 +1,15 @@
 import { FastifyInstance } from "fastify";
 import { userController } from "../controllers/userController.js";
-import { adminRegisterSchema } from "../schemas/user.js";
+import { adminRegisterSchema, getAllUserSchema } from "../schemas/user.js";
 import { userService } from "../services/userService.js";
 
 export async function userRoutes(fastify: FastifyInstance) {
   // 全ユーザー取得API
-  fastify.get("/api/users", async (_, reply) => {
-    try {
-      const allUsers = await userService.findAll();
-
-      reply.status(200).send({
-        message: "全ユーザー取得成功",
-        users: allUsers,
-        count: allUsers.length,
-      });
-    } catch (error) {
-      fastify.log.error(error);
-      reply.status(500).send({
-        error: "ユーザー取得エラーが発生しました",
-      });
-    }
-  });
+  fastify.get(
+    "/api/users",
+    { schema: getAllUserSchema },
+    userController.getAllUsers
+  );
 
   // ユーザー削除API
   fastify.delete("/api/users/:id", async (request, reply) => {
