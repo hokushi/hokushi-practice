@@ -1,39 +1,40 @@
+import { z } from "zod";
+
+// Schema for user registration
+export const registerBodySchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(8),
+  isAdmin: z.boolean(),
+});
+
+export type RegisterBody = z.infer<typeof registerBodySchema>;
+
 export const registerSchema = {
-  body: {
-    type: "object",
-    required: ["name", "email", "password", "isAdmin"],
-    properties: {
-      name: { type: "string", minLength: 1 },
-      email: { type: "string", format: "email" },
-      password: { type: "string", minLength: 8 },
-      isAdmin: { type: "boolean" },
-    },
-  },
+  body: registerBodySchema,
 };
 
+// Schema for user login
+export const loginBodySchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export type LoginBody = z.infer<typeof loginBodySchema>;
+
+const loginUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string(),
+  isAdmin: z.boolean(),
+});
+
 export const loginSchema = {
-  body: {
-    type: "object",
-    required: ["email", "password"],
-    properties: {
-      email: { type: "string", format: "email" },
-      password: { type: "string", minLength: 1 },
-    },
-  },
+  body: loginBodySchema,
   response: {
-    200: {
-      properties: {
-        message: { type: "string" },
-        user: {
-          type: "object",
-          properties: {
-            id: { type: "number" },
-            name: { type: "string" },
-            email: { type: "string" },
-            isAdmin: { type: "boolean" },
-          },
-        },
-      },
-    },
+    200: z.object({
+      message: z.string(),
+      user: loginUserSchema,
+    }),
   },
 };
