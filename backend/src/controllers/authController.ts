@@ -68,7 +68,7 @@ export const authController = {
     try {
       reply.header(
         "Set-Cookie",
-        "token=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/",
+        "token=; HttpOnly; SameSite=Lax; Max-Age=0; Path=/",
       );
 
       reply.status(200).send({
