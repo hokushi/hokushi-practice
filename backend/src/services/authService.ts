@@ -5,6 +5,7 @@ import { AppError } from "../errors/AppError.js";
 import {
   emailAlreadyExistsError,
   invalidCredentialsError,
+  invalidTokenError,
 } from "../errors/authErrors.js";
 import { userRepository } from "../repositories/userRepository.js";
 
@@ -90,7 +91,7 @@ export const authService = {
 
       return decoded;
     } catch (error) {
-      throw new AppError("INVALID_TOKEN", 401, "無効なトークンです");
+      throw invalidTokenError();
     }
   },
 };

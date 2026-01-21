@@ -13,3 +13,17 @@ export const emailAlreadyExistsError = () =>
     409,
     "このメールアドレスは既に使用されています",
   );
+
+export const authTokenMissingError = () =>
+  new AppError(
+    "AUTH_TOKEN_MISSING",
+    401,
+    "ログインし直してください",
+  );
+
+export const invalidTokenError = () =>
+  new AppError(
+    "INVALID_TOKEN",
+    401,
+    "無効なトークンです",
+  );

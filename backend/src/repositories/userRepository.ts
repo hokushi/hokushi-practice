@@ -3,6 +3,19 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 export const userRepository = {
+  // IDでユーザーを取得
+  async findById(userId: number) {
+    return await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isAdmin: true,
+      },
+    });
+  },
+
   // メールアドレスでユーザーを取得
   async findByEmail(email: string) {
     return await prisma.user.findUnique({

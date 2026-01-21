@@ -6,9 +6,7 @@ const prisma = new PrismaClient();
 export const userService = {
   // ユーザーをIDで検索
   async findById(userId: number) {
-    return await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    return await userRepository.findById(userId);
   },
 
   // 全ユーザーを取得
