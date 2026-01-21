@@ -2,7 +2,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/index.js";
 import { AppError } from "../errors/AppError.js";
-import { invalidCredentialsError } from "../errors/authErrors.js";
+import {
+  emailAlreadyExistsError,
+  invalidCredentialsError,
+} from "../errors/authErrors.js";
 import { userRepository } from "../repositories/userRepository.js";
 
 export const authService = {
@@ -17,11 +20,7 @@ export const authService = {
     const existingUser = await userRepository.findByEmail(email);
 
     if (existingUser) {
-      throw new AppError(
-        "EMAIL_ALREADY_EXISTS",
-        409,
-        "このメールアドレスは既に使用されています",
-      );
+      throw emailAlreadyExistsError();
     }
 
     // パスワードハッシュ化
