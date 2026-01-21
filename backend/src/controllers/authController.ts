@@ -7,7 +7,7 @@ export const authController = {
   // ユーザー登録
   async register(
     request: FastifyRequest<{ Body: RegisterBody }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     try {
       const { name, email, password, isAdmin } = request.body;
@@ -16,7 +16,7 @@ export const authController = {
         name,
         email,
         password,
-        isAdmin
+        isAdmin,
       );
 
       reply.status(201).send({
@@ -36,7 +36,7 @@ export const authController = {
   // ログイン
   async login(
     request: FastifyRequest<{ Body: LoginBody }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     try {
       const { email, password } = request.body;
@@ -46,7 +46,7 @@ export const authController = {
       // Cookieにトークンを設定
       reply.header(
         "Set-Cookie",
-        `token=${token}; HttpOnly; SameSite=Lax; Max-Age=604800; Path=/`
+        `token=${token}; HttpOnly; SameSite=Lax; Max-Age=604800; Path=/`,
       );
 
       reply.status(200).send({
