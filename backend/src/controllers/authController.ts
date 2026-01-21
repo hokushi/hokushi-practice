@@ -1,17 +1,16 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { authService } from "../services/authService.js";
 import { AppError } from "../errors/AppError.js";
+import type { LoginBody, RegisterBody } from "../schemas/auth.js";
 
 export const authController = {
   // ユーザー登録
-  async register(request: FastifyRequest, reply: FastifyReply) {
+  async register(
+    request: FastifyRequest<{ Body: RegisterBody }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { name, email, password, isAdmin } = request.body as {
-        name: string;
-        email: string;
-        password: string;
-        isAdmin: boolean;
-      };
+      const { name, email, password, isAdmin } = request.body;
 
       const newUser = await authService.register(
         name,
@@ -35,12 +34,12 @@ export const authController = {
   },
 
   // ログイン
-  async login(request: FastifyRequest, reply: FastifyReply) {
+  async login(
+    request: FastifyRequest<{ Body: LoginBody }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { email, password } = request.body as {
-        email: string;
-        password: string;
-      };
+      const { email, password } = request.body;
 
       const { token, user } = await authService.login(email, password);
 
