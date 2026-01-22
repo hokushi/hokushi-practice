@@ -25,7 +25,10 @@ export const gameController = {
 
       reply.status(201).send({
         message: "ゲームを作成しました",
-        game,
+        game: {
+          ...game,
+          createdAt: game.createdAt.toISOString(),
+        },
       });
     } catch (error) {
       if (error instanceof AppError) {

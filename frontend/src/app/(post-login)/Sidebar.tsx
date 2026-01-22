@@ -3,56 +3,45 @@
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/app/hooks/useToast";
-import { getBaseUrl } from "@/app/utils/getBaseUrl";
+import InputForm from "../components/InputForm";
 import PlusIcon from "../components/icons/PlusIcon";
 import { useGameCreateForm, GameCreateSchemaType } from "./gameCreate";
+import { createGameAction } from "./gameCreateAction";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const toast = useToast();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useGameCreateForm();
 
   const handleSubmit = async (formData: GameCreateSchemaType) => {
     try {
-      const response = await fetch(`${getBaseUrl()}/api/games`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          size: Number(formData.size),
-        }),
+      const res = await createGameAction({
+        name: formData.name.trim(),
+        size: Number(formData.size),
       });
 
-      const result = (await response.json().catch(() => ({}))) as {
-        message?: string;
-        error?: string;
-      };
-
-      if (!response.ok || result.error) {
-        toast.error(result.error ?? "ゲーム作成に失敗しました");
+      if (res.error) {
+        toast.error(res.error);
         return;
       }
 
-      toast.success(result.message ?? "ゲームを作成しました");
+      toast.success(res.message ?? "ゲームを作成しました");
       setOpen(false);
-      form.reset();
+      router.refresh();
     } catch {
       toast.error("ゲーム作成に失敗しました");
     }
@@ -80,25 +69,18 @@ export default function Sidebar() {
               className="grid gap-4"
               onSubmit={form.handleSubmit(handleSubmit)}
             >
-              <div className="grid gap-2">
-                <Label htmlFor="game-name">ゲーム名</Label>
-                <Input
-                  id="game-name"
-                  placeholder="例: 神経衰弱チャレンジ"
-                  {...form.register("name")}
-                />
-                {form.formState.errors.name && (
-                  <p className="text-xs text-red-500">
-                    {form.formState.errors.name.message}
-                  </p>
-                )}
-              </div>
+              <InputForm
+                control={form.control}
+                name="name"
+                label="ゲーム名"
+                placeholder="例: 神経衰弱チャレンジ"
+              />
               <div className="grid gap-2">
                 <Label htmlFor="game-size">サイズ</Label>
                 <select
                   id="game-size"
                   {...form.register("size")}
-                  className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                  className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none"
                 >
                   <option value="4">4 x 4</option>
                   <option value="6">6 x 6</option>
