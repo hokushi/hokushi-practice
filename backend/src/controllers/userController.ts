@@ -2,6 +2,9 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { userService } from "../services/userService.js";
 import { authService } from "../services/authService.js";
 import { AppError } from "../errors/AppError.js";
+import { getTokenFromRequest } from "../utils/auth.js";
+import { authTokenMissingError } from "../errors/authErrors.js";
+import { userNotFoundError } from "../errors/userErrors.js";
 
 export const userController = {
   /**
@@ -15,15 +18,10 @@ export const userController = {
    */
   async getAllUsers(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // Cookieヘッダーからtokenを取得
-      const cookieHeader = request.headers.cookie;
-
-      const token = cookieHeader?.match(/token=([^;]+)/)?.[1];
+      const token = getTokenFromRequest(request);
 
       if (!token) {
-        return reply.status(401).send({
-          error: "認証トークンが見つかりません",
-        });
+        throw authTokenMissingError();
       }
 
       // トークン検証
@@ -48,6 +46,36 @@ export const userController = {
         return reply.status(error.statusCode).send({ error: error.message });
       }
       //throw漏れを防ぐための500エラーハンドリング
+      reply.status(500).send({
+        error: "サーバーエラーが発生しました",
+      });
+    }
+  },
+
+  // ログインユーザー取得
+  async getMe(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const token = getTokenFromRequest(request);
+
+      if (!token) {
+        throw authTokenMissingError();
+      }
+
+      const decoded = await authService.verifyToken(token);
+      const user = await userService.findById(decoded.userId);
+
+      if (!user) {
+        throw userNotFoundError();
+      }
+
+      reply.status(200).send({
+        message: "ユーザー取得成功",
+        user,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
+      }
       reply.status(500).send({
         error: "サーバーエラーが発生しました",
       });

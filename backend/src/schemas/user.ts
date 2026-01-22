@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const userSummarySchema = z.object({
+export const userSummarySchema = z.object({
   id: z.number(),
   name: z.string(),
   email: z.string(),
@@ -8,16 +8,22 @@ const userSummarySchema = z.object({
   isAdmin: z.boolean(),
 });
 
-const userSchema = z.object({
+export const userSchema = z.object({
   id: z.number(),
   name: z.string(),
   email: z.string(),
   isAdmin: z.boolean(),
 });
 
-const errorSchema = z.object({
+export const errorSchema = z.object({
   error: z.string(),
 });
+
+export const adminRegisterBodySchema = z.object({
+  isAdmin: z.boolean(),
+});
+
+export type AdminRegisterBody = z.infer<typeof adminRegisterBodySchema>;
 
 export const getAllUserSchema = {
   response: {
@@ -30,10 +36,20 @@ export const getAllUserSchema = {
   },
 };
 
+export const getMeSchema = {
+  response: {
+    200: z.object({
+      message: z.string(),
+      user: userSchema,
+    }),
+    401: errorSchema,
+    404: errorSchema,
+    500: errorSchema,
+  },
+};
+
 export const adminRegisterSchema = {
-  body: z.object({
-    isAdmin: z.boolean(),
-  }),
+  body: adminRegisterBodySchema,
   response: {
     200: z.object({
       message: z.string(),
