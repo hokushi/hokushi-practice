@@ -10,6 +10,10 @@ import { PrismaClient } from "../../../generated/prisma/index.js";
 import { config } from "../../config/index.js";
 import { gameRoutes } from "../game.js";
 
+if (process.env.DATABASE_URL_TEST) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL_TEST;
+}
+
 const prisma = new PrismaClient();
 
 const buildApp = async () => {
@@ -46,7 +50,7 @@ describe("POST /api/games (integration)", () => {
     const token = jwt.sign(
       { userId: user.id, email, isAdmin: false },
       config.jwtSecret,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     const response = await app.inject({
@@ -88,8 +92,10 @@ describe("POST /api/games (integration)", () => {
       size: 6,
     });
 
+    /*
     await prisma.game.deleteMany({ where: { userId: user.id } });
     await prisma.user.delete({ where: { id: user.id } });
     await app.close();
+    */
   });
 });
