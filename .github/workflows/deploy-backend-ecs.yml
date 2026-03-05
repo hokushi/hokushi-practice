@@ -63,11 +63,24 @@ jobs:
       - name: Wait for service stability (up to 20 min)
         run: |
           set -eux
-          aws ecs wait services-stable \
-            --cluster "${{ env.ECS_CLUSTER }}" \
-            --services "${{ env.ECS_SERVICE }}" \
-            --delay 15 \
-            --max-attempts 80
+          for i in $(seq 1 80); do
+            is_stable=$(aws ecs describe-services \
+              --cluster "${{ env.ECS_CLUSTER }}" \
+              --services "${{ env.ECS_SERVICE }}" \
+              --query "services[0].length(deployments) == \`1\` && services[0].runningCount == services[0].desiredCount && services[0].pendingCount == \`0\`" \
+              --output text)
+
+            if [ "$is_stable" = "True" ]; then
+              echo "Service is stable."
+              exit 0
+            fi
+
+            echo "Service not stable yet (attempt ${i}/80)."
+            sleep 15
+          done
+
+          echo "Timed out waiting for service stability."
+          exit 1
 
       # 失敗したときだけ、原因が分かるように events を表示
       - name: Debug ECS events on failure
