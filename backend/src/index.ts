@@ -6,6 +6,7 @@ import {
 } from "fastify-type-provider-zod";
 import { config } from "./config/index.js";
 import { authRoutes } from "./routes/auth.js";
+import { gameRoutes } from "./routes/games.js";
 import { userRoutes } from "./routes/users.js";
 
 const fastify = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
@@ -23,6 +24,7 @@ fastify.get("/", async () => {
 
 // ルート登録
 await fastify.register(authRoutes); // 認証系API
+await fastify.register(gameRoutes); // ゲーム系API
 await fastify.register(userRoutes); // ユーザー管理系API
 
 // サーバー起動
