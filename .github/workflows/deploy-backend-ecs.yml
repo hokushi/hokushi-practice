@@ -39,6 +39,8 @@ jobs:
           ECR_REGISTRY: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          set -eux
+
           IMAGE_SHA_URI=${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}
           IMAGE_LATEST_URI=${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:latest
 
@@ -51,13 +53,29 @@ jobs:
 
       - name: Force new deployment on ECS
         run: |
+          set -eux
           aws ecs update-service \
             --cluster "${{ env.ECS_CLUSTER }}" \
             --service "${{ env.ECS_SERVICE }}" \
             --force-new-deployment
 
-      - name: Wait for service stability
+      # Express/Canary だと 10分超えることがあるので、待機上限を伸ばす
+      - name: Wait for service stability (up to 20 min)
         run: |
+          set -eux
           aws ecs wait services-stable \
             --cluster "${{ env.ECS_CLUSTER }}" \
-            --services "${{ env.ECS_SERVICE }}"
+            --services "${{ env.ECS_SERVICE }}" \
+            --delay 15 \
+            --max-attempts 80
+
+      # 失敗したときだけ、原因が分かるように events を表示
+      - name: Debug ECS events on failure
+        if: failure()
+        run: |
+          echo "==== ECS Service Events (latest 20) ===="
+          aws ecs describe-services \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --services "${{ env.ECS_SERVICE }}" \
+            --query "services[0].events[0:20].[createdAt,message]" \
+            --output table
