@@ -15,7 +15,9 @@ services:
     restart: unless-stopped
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: hokushi_backend
     ports:
       - "3002:3002"  # Fastify API
@@ -27,8 +29,6 @@ services:
       - ./backend:/app
       - /app/node_modules
     restart: unless-stopped
-    profiles:
-      - docker
 
   pgadmin:
     image: dpage/pgadmin4
