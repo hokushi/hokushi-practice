@@ -12,4 +12,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
   // ログインAPI
   fastify.post("/api/login", { schema: loginSchema }, authController.login);
+
+  // ログアウトAPI
+  fastify.post("/api/logout", authController.logout);
 }

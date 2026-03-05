@@ -43,10 +43,9 @@ export const authController = {
 
       const { token, user } = await authService.login(email, password);
 
-      // Cookieにトークンを設定
       reply.header(
         "Set-Cookie",
-        `token=${token}; HttpOnly; SameSite=Lax; Max-Age=604800; Path=/`,
+        `token=${token}; HttpOnly; Secure; SameSite=Lax; Max-Age=604800; Path=/`,
       );
 
       reply.status(200).send({
@@ -58,6 +57,27 @@ export const authController = {
         return reply.status(error.statusCode).send({ error: error.message });
       }
       //throw漏れを防ぐための500エラーハンドリング
+      reply.status(500).send({
+        error: "サーバーエラーが発生しました",
+      });
+    }
+  },
+
+  // ログアウト
+  async logout(_request: FastifyRequest, reply: FastifyReply) {
+    try {
+      reply.header(
+        "Set-Cookie",
+        "token=; HttpOnly; SameSite=Lax; Max-Age=0; Path=/",
+      );
+
+      reply.status(200).send({
+        message: "ログアウトしました",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
+      }
       reply.status(500).send({
         error: "サーバーエラーが発生しました",
       });

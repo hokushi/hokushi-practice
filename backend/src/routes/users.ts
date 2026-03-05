@@ -1,6 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { userController } from "../controllers/userController.js";
-import { adminRegisterSchema, getAllUserSchema } from "../schemas/user.js";
+import {
+  adminRegisterSchema,
+  getAllUserSchema,
+  getMeSchema,
+} from "../schemas/user.js";
 import { userService } from "../services/userService.js";
 
 export async function userRoutes(fastify: FastifyInstance) {
@@ -8,7 +12,14 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.get(
     "/api/users",
     { schema: getAllUserSchema },
-    userController.getAllUsers
+    userController.getAllUsers,
+  );
+
+  // ログインユーザー取得API
+  fastify.get(
+    "/api/users/me",
+    { schema: getMeSchema },
+    userController.getMe,
   );
 
   // ユーザー削除API
@@ -51,6 +62,6 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.put(
     "/api/users/admin/:id",
     { schema: adminRegisterSchema },
-    userController.amdinRegister
+    userController.amdinRegister,
   );
 }
